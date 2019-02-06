@@ -32,6 +32,27 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EasyDox, Version=2.0.34.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EasyDox.2.0.34\lib\EasyDox.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyDox.Morpher, Version=2.0.30.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EasyDox.Morpher.2.0.30\lib\EasyDox.Morpher.dll</HintPath>
+    </Reference>
+    <Reference Include="Morpher.API, Version=1.0.7.0, Culture=neutral, PublicKeyToken=03702b3c5cdf2afc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Morpher.API.1.0.9\lib\net40\Morpher.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Morpher.AppConfigFactory, Version=1.0.4.0, Culture=neutral, PublicKeyToken=c5809f92e7c112d0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Morpher.API.1.0.9\lib\net40\Morpher.AppConfigFactory.dll</HintPath>
+    </Reference>
+    <Reference Include="Morpher.Dynamic, Version=1.0.4.0, Culture=neutral, PublicKeyToken=5004d63811eb04a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\Morpher.API.1.0.9\lib\net40\Morpher.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Morpher.Generic, Version=1.0.4.0, Culture=neutral, PublicKeyToken=7b9defe7f8087819, processorArchitecture=MSIL">
+      <HintPath>..\packages\Morpher.API.1.0.9\lib\net40\Morpher.Generic.dll</HintPath>
+    </Reference>
+    <Reference Include="Morpher.WebService.V2, Version=1.0.5.0, Culture=neutral, PublicKeyToken=79046ff5b0da4663, processorArchitecture=MSIL">
+      <HintPath>..\packages\Morpher.API.1.0.9\lib\net40\Morpher.WebService.V2.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,6 +74,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -62,6 +86,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
