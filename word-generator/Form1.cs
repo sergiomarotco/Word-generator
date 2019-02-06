@@ -92,9 +92,6 @@ namespace word_generator
                 Console.WriteLine(error.Accept(new ErrorToRussianString()));
             }
 
-            // Показываем договор пользователю (если установлен Ворд).
-            // Даже если в процессе генерации возникли ошибки (не найдено поле или функция),
-            // документ все равно будет создан. Значения полей с ошибками не изменятся.
             Process.Start(outputPath);
         }
         private void FilReps()
