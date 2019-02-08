@@ -105,6 +105,7 @@
     <Content Include="Parameters.txt" />
     <Content Include="Replacement_Акт.txt" />
     <Content Include="Replacement_Протокол.txt" />
+    <Content Include="word-generator.exe" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Output\" />
