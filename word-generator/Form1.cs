@@ -36,7 +36,7 @@ namespace word_generator
                             textBox1.Text = parameter[1]; //    Заполняем поле "Папка с шаблонами"
                             try
                             {
-                                string[] Templates = new DirectoryInfo(parameter[1]).GetFiles("Template*.docx", SearchOption.AllDirectories).Select(f => f.Name).ToArray();
+                                string[] Templates = new DirectoryInfo(parameter[1]).GetFiles("Template*.docx", SearchOption.TopDirectoryOnly).Select(f => f.Name).ToArray();
                                 listBox1.Items.AddRange(Templates); //Заполняем список "Шаблоны в папке"
                                 string[] Replasments = new DirectoryInfo(textBox1.Text).GetFiles("Replacement*.txt", SearchOption.TopDirectoryOnly).Select(f => f.Name).ToArray();
                                 for (int r = 0; r < Replasments.Length; r++)
@@ -84,11 +84,10 @@ namespace word_generator
         {
             var engine = new Engine();
 
-            var fieldValues = new Dictionary<string, string>(listView1.Items.Count);
+            Dictionary<string, string> fieldValues = new Dictionary<string, string>(listView1.Items.Count);
             for (int L = 0; L < listView1.Items.Count; L++)            
                 fieldValues.Add(listView1.Items[L].SubItems[0].Text, listView1.Items[L].SubItems[1].Text);
-            
-
+    
             string outputPath = textBox1.Text+"\\" + DateTime.Now.Year.ToString()+"."+ DateTime.Now.Month.ToString() + "."+ DateTime.Now.Day.ToString() + " "+ DateTime.Now.Hour.ToString() + "-"+ DateTime.Now.Minute.ToString() + ".docx";
 
             var errors = engine.Merge(textBox1.Text+"\\"+textBox2.Text, fieldValues, outputPath);
@@ -152,6 +151,11 @@ namespace word_generator
         private void TextBox2_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Start();
         }
     }
 }
