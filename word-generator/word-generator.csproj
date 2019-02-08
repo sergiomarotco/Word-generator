@@ -97,13 +97,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <None Include="Template_Акт_хороший.docx" />
-    <None Include="Template_Протокол_Хорошие2.docx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Parameters.txt" />
+    <Content Include="Replacement_Акт.txt" />
+    <Content Include="Replacement_Протокол.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Output\" />

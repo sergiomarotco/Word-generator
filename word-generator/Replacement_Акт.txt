@@ -1,0 +1,7 @@
+#do not delete this line#
+#Дата	06.02.2018
+#номер_акта	9999/9999
+#ФИО1	Sergio
+#ФИО2	Petrov
+#Должность1	SergioД1
+#Должность2	SergioД2

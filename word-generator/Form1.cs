@@ -83,7 +83,17 @@ namespace word_generator
         private void Button1_Click(object sender, EventArgs e)
         {
             var engine = new Engine();
-
+            try
+            {
+                if (!Directory.Exists(textBox1.Text + "\\Output\\"))
+                {
+                    DirectoryInfo di = Directory.CreateDirectory(textBox1.Text + "\\Output\\");
+                }
+            }
+            catch (IOException ioex)
+            {
+                Console.WriteLine(ioex.Message);
+            }
             Dictionary<string, string> fieldValues = new Dictionary<string, string>(listView1.Items.Count);
             for (int L = 0; L < listView1.Items.Count; L++)            
                 fieldValues.Add(listView1.Items[L].SubItems[0].Text, listView1.Items[L].SubItems[1].Text);

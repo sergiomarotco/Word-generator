@@ -1,0 +1,17 @@
+#do not delete this line#
+#номер_протокола	SergioNumber...
+#имя_ключа	SergioKey
+#день_дата	Sergio 09 02
+#ФИО1	Sergio
+#ФИО2	Petrov
+#ФИО3	Administrator
+#Должность1	SergioДолжность1
+#Должность2	SergioДолжность2
+#Должность3	SergioДолжность3
+#Securepack1	SergioPack1
+#Securepack2	SergioPack2
+#CN=	Sergio_CN
+#O=	Sergio_O
+#Class	2
+#Папка	SergioПапка
+#Подпапка	SergioПодпапка
