@@ -151,11 +151,15 @@ namespace word_generator
         }
         private void Save_Parameters()
         {
-            string[] content = new string[parameters_count];
-            content[0] = "Template_patch\t" + textBox1.Text;
-            content[1] = "Template_selected\t" + textBox2.Text;
-            content[2] = "Replacement_selected\t" + textBox3.Text;
-            File.WriteAllLines(Environment.CurrentDirectory + "\\Parameters.txt", content);
+            try
+            {
+                string[] content = new string[parameters_count];
+                content[0] = "Template_patch\t" + textBox1.Text;
+                content[1] = "Template_selected\t" + textBox2.Text;
+                content[2] = "Replacement_selected\t" + textBox3.Text;
+                File.WriteAllLines(Environment.CurrentDirectory + "\\Parameters.txt", content);
+            }
+            catch { }
         }
         private void TextBox2_TextChanged(object sender, EventArgs e)
         {
