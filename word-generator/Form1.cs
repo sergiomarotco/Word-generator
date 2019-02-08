@@ -88,7 +88,7 @@ namespace word_generator
             for (int L = 0; L < listView1.Items.Count; L++)            
                 fieldValues.Add(listView1.Items[L].SubItems[0].Text, listView1.Items[L].SubItems[1].Text);
     
-            string outputPath = textBox1.Text+"\\" + DateTime.Now.Year.ToString()+"."+ DateTime.Now.Month.ToString() + "."+ DateTime.Now.Day.ToString() + " "+ DateTime.Now.Hour.ToString() + "-"+ DateTime.Now.Minute.ToString() + ".docx";
+            string outputPath = textBox1.Text+"\\Output\\" + DateTime.Now.Year.ToString()+"."+ DateTime.Now.Month.ToString() + "."+ DateTime.Now.Day.ToString() + " "+ DateTime.Now.Hour.ToString() + "-"+ DateTime.Now.Minute.ToString() + ".docx";
 
             var errors = engine.Merge(textBox1.Text+"\\"+textBox2.Text, fieldValues, outputPath);
 
