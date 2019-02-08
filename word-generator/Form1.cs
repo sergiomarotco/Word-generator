@@ -20,11 +20,11 @@ namespace word_generator
             InitializeComponent();
         }
         int parameters_count = 0;
-        private void Form1_Load(object sender, EventArgs e)
+        private void Start()
         {
-            splitContainer1.SplitterDistance = 419;
             if (File.Exists("Parameters.txt"))
             {
+                listBox1.Items.Clear(); listBox2.Items.Clear();
                 string[] parameters = File.ReadAllLines("Parameters.txt");
                 parameters_count = parameters.Length;
                 for (int i = 0; i < parameters.Length; i++)
@@ -34,15 +34,19 @@ namespace word_generator
                     {
                         case "Template_patch":
                             textBox1.Text = parameter[1]; //    Заполняем поле "Папка с шаблонами"
-                            string[] Templates = new DirectoryInfo(parameter[1]).GetFiles("Template*.docx", SearchOption.AllDirectories).Select(f => f.Name).ToArray();
-                            listBox1.Items.AddRange(Templates); //Заполняем список "Шаблоны в папке"
-                            string[] Replasments = new DirectoryInfo(textBox1.Text).GetFiles("Replacement*.txt", SearchOption.TopDirectoryOnly).Select(f => f.Name).ToArray();
-                            for (int r = 0; r < Replasments.Length; r++)
+                            try
                             {
-                                string[] lll = File.ReadAllLines(Replasments[r]);
-                                if (lll[0].Equals("#do not delete this line#"))
-                                    listBox2.Items.Add(Replasments[r]);
+                                string[] Templates = new DirectoryInfo(parameter[1]).GetFiles("Template*.docx", SearchOption.AllDirectories).Select(f => f.Name).ToArray();
+                                listBox1.Items.AddRange(Templates); //Заполняем список "Шаблоны в папке"
+                                string[] Replasments = new DirectoryInfo(textBox1.Text).GetFiles("Replacement*.txt", SearchOption.TopDirectoryOnly).Select(f => f.Name).ToArray();
+                                for (int r = 0; r < Replasments.Length; r++)
+                                {
+                                    string[] lll = File.ReadAllLines(Replasments[r]);
+                                    if (lll[0].Equals("#do not delete this line#"))
+                                        listBox2.Items.Add(Replasments[r]);
+                                }
                             }
+                            catch { }
                             break;
                         case "Template_selected": //    Заполняем поле "Выбранный шаблон документы"
                             if (File.Exists(parameter[1])) textBox2.Text = parameter[1];
@@ -56,13 +60,18 @@ namespace word_generator
                 }
             }
         }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            splitContainer1.SplitterDistance = 419;
+            Start();
+        }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             textBox2.Text = listBox1.SelectedItem.ToString();
         }
 
-        private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void ListBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
@@ -71,7 +80,7 @@ namespace word_generator
             catch (Exception ee) { MessageBox.Show(ee.Source + Environment.NewLine + ee.Message); }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             var engine = new Engine();
 
@@ -79,13 +88,11 @@ namespace word_generator
             for (int L = 0; L < listView1.Items.Count; L++)            
                 fieldValues.Add(listView1.Items[L].SubItems[0].Text, listView1.Items[L].SubItems[1].Text);
             
-            Console.Write("Генерируем договор... ");
 
             string outputPath = textBox1.Text+"\\" + DateTime.Now.Year.ToString()+"."+ DateTime.Now.Month.ToString() + "."+ DateTime.Now.Day.ToString() + " "+ DateTime.Now.Hour.ToString() + "-"+ DateTime.Now.Minute.ToString() + ".docx";
 
             var errors = engine.Merge(textBox1.Text+"\\"+textBox2.Text, fieldValues, outputPath);
 
-            Console.WriteLine("готово.");
 
             foreach (var error in errors)
             {
@@ -108,19 +115,43 @@ namespace word_generator
             }
             catch (Exception ee) { }
         }
-        private void textBox3_TextChanged(object sender, EventArgs e)
+        private void TextBox3_TextChanged(object sender, EventArgs e)
         {
             FilReps();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            Save_Parameters();
+        }
+
+        private void Button3_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderDlg = new FolderBrowserDialog();
+            folderDlg.ShowNewFolderButton = true;
+            folderDlg.SelectedPath = Environment.CurrentDirectory;
+
+            DialogResult result = folderDlg.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                textBox1.Text = folderDlg.SelectedPath;
+                Environment.SpecialFolder root = folderDlg.RootFolder;
+            }
+            Save_Parameters();
+            Start();
+          
+        }
+        private void Save_Parameters()
         {
             string[] content = new string[parameters_count];
             content[0] = "Template_patch\t" + textBox1.Text;
             content[1] = "Template_selected\t" + textBox2.Text;
             content[2] = "Replacement_selected\t" + textBox3.Text;
-            //content[3] = "Template_patch\t" + textBox1.Text;
-            File.WriteAllLines(textBox1.Text + "\\Parameters.txt", content);
+            File.WriteAllLines(Environment.CurrentDirectory + "\\Parameters.txt", content);
+        }
+        private void TextBox2_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
