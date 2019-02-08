@@ -91,8 +91,7 @@ namespace word_generator
             string outputPath = textBox1.Text+"\\Output\\" + DateTime.Now.Year.ToString()+"."+ DateTime.Now.Month.ToString() + "."+ DateTime.Now.Day.ToString() + " "+ DateTime.Now.Hour.ToString() + "-"+ DateTime.Now.Minute.ToString() + ".docx";
 
             var errors = engine.Merge(textBox1.Text+"\\"+textBox2.Text, fieldValues, outputPath);
-
-
+            
             foreach (var error in errors)
             {
                 Console.WriteLine(error.Accept(new ErrorToRussianString()));

@@ -105,5 +105,8 @@
   <ItemGroup>
     <Content Include="Parameters.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Output\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
