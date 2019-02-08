@@ -96,7 +96,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Template_Акт_хороший.docx" />
+    <Content Include="Template_Акт_хороший.docx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
