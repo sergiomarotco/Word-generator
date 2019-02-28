@@ -122,7 +122,7 @@ namespace word_generator
                     listView1.Items.Add(new ListViewItem(new string[] { rep[0], rep[1] }));
                 }
             }
-            catch () { }
+            catch { }
         }
         private void TextBox3_TextChanged(object sender, EventArgs e)
         {
