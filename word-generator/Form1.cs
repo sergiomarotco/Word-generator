@@ -62,6 +62,7 @@ namespace word_generator
         }
         private void Form1_Load(object sender, EventArgs e)
         {
+            Icon = Properties.Resources.ico;
             splitContainer1.SplitterDistance = 419;
             Start();
         }

@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\ico.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EasyDox, Version=2.0.34.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EasyDox.2.0.34\lib\EasyDox.dll</HintPath>
@@ -85,6 +88,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -104,6 +108,7 @@
     <Content Include="Parameters.txt" />
     <Content Include="Replacement_Акт.txt" />
     <Content Include="Replacement_Протокол.txt" />
+    <None Include="Resources\ico.ico" />
     <Content Include="word-generator.exe" />
   </ItemGroup>
   <ItemGroup>
