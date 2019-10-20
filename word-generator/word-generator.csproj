@@ -41,6 +41,11 @@
     <Reference Include="EasyDox.Morpher, Version=2.0.30.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EasyDox.Morpher.2.0.30\lib\EasyDox.Morpher.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Office.Interop.Word.15.0.4797.1003\lib\net20\Microsoft.Office.Interop.Word.dll</HintPath>
+      <Private>True</Private>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Morpher.API, Version=1.0.7.0, Culture=neutral, PublicKeyToken=03702b3c5cdf2afc, processorArchitecture=MSIL">
       <HintPath>..\packages\Morpher.API.1.0.9\lib\net40\Morpher.API.dll</HintPath>
     </Reference>
