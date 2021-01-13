@@ -1,15 +1,10 @@
-﻿using EasyDox;
-using Microsoft.Office.Interop.Word;
+﻿using Microsoft.Office.Interop.Word;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace word_generator
@@ -21,11 +16,14 @@ namespace word_generator
             InitializeComponent();
         }
         int parameters_count = 0;
-        private void Start()
+        /// <summary>
+        /// Заполнить параметры в левой части программы из файла Parameters.txt
+        /// </summary>
+        private void LoadParameters()
         {
             if (File.Exists("Parameters.txt"))
             {
-                listBox1.Items.Clear(); listBox2.Items.Clear();
+                listView3.Items.Clear(); listView2.Items.Clear();
                 string[] parameters = File.ReadAllLines("Parameters.txt");
                 parameters_count = parameters.Length;
                 for (int i = 0; i < parameters.Length; i++)
@@ -34,28 +32,34 @@ namespace word_generator
                     switch (parameter[0])
                     {
                         case "Template_patch":
-                            textBox1.Text = parameter[1]; //    Заполняем поле "Папка с шаблонами"
+                            if (Directory.Exists(parameter[1]))
+                                textBox1.Text = parameter[1]; //    Заполняем поле "Папка с шаблонами"
+                            else textBox1.Text = Environment.CurrentDirectory;
                             try
                             {
-                                string[] Templates = new DirectoryInfo(parameter[1]).GetFiles("*.doc*", SearchOption.AllDirectories).Select(f => f.FullName).ToArray();
-                                listBox1.Items.AddRange(Templates); //Заполняем список "Шаблоны в папке"
-                                string[] Replasments = new DirectoryInfo(textBox1.Text).GetFiles("Replacement*.txt", SearchOption.TopDirectoryOnly).Select(f => f.Name).ToArray();
+                                string[] Templates = new DirectoryInfo(textBox1.Text).GetFiles("*.doc*", SearchOption.AllDirectories).Select(f => f.FullName).ToArray();
+                                for (int r = 0; r < Templates.Length; r++)
+                                {
+                                    string[] lll = File.ReadAllLines(Templates[r]);
+
+                                    string[] patches = Templates[r].Split('\\');
+                                    listView3.Items.Add(new ListViewItem(new string[] { patches[patches.Length - 1], Templates[r] }));
+
+                                }
+
+                                string[] Replasments = new DirectoryInfo(textBox1.Text).GetFiles("Replacement*.txt", SearchOption.AllDirectories).Select(f => f.FullName).ToArray();
                                 for (int r = 0; r < Replasments.Length; r++)
                                 {
-                                    string[] lll = File.ReadAllLines(textBox1.Text+@"\"+Replasments[r]);
+                                    string[] lll = File.ReadAllLines(Replasments[r]);
                                     if (lll[0].Equals("#do not delete this line#"))
-                                        listBox2.Items.Add(Replasments[r]);
+                                    {
+                                        string[] patches = Replasments[r].Split('\\');
+                                        listView2.Items.Add(new ListViewItem(new string[] { patches[patches.Length-1], Replasments[r] }));
+                                    }
                                 }
                             }
                             catch(Exception ee) { MessageBox.Show(ee.Message);}
                             break;
-                        case "Template_selected": //    Заполняем поле "Выбранный шаблон документы"
-                            if (File.Exists(parameter[1])) textBox2.Text = parameter[1];
-                            break;
-                        case "Replacement_selected": //  Заполняем поле "Выбранный шаблон замены"
-                            if (File.Exists(parameter[1])) textBox3.Text = parameter[1];
-                            FilReps();
-                            break;                  //  Заполняем поле "Папка с результатами"
                         case "Output_folder":
                             if (Directory.Exists(parameter[1])) textBox4.Text = parameter[1];
                             break;
@@ -68,102 +72,122 @@ namespace word_generator
         {
             Icon = Properties.Resources.ico;
             splitContainer1.SplitterDistance = 670;
-            Start();
-        }
-
-        private void ListBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (listBox1.SelectedItems.Count > 1)
-            { textBox2.Text = ""; }
-            else
-            { textBox2.Text = listBox1.SelectedItem.ToString(); }
-        }
-
-        private void ListBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                textBox3.Text = listBox2.SelectedItem.ToString();
-            }
-            catch (Exception ee) { MessageBox.Show(ee.Source + Environment.NewLine + ee.Message); }
+            LoadParameters();
         }
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            Stopwatch st = new Stopwatch();
-            st.Start();
-            MessageBox.Show("!После закрытия окна, все процессы winword.exe будут убиты без сохранения!");
-            foreach (var proc in Process.GetProcessesByName("winWord"))
+            if (listView3.SelectedItems.Count > 0)
             {
-                proc.Kill();
-            }
-            button1.Enabled = false;
-            FolderBrowserDialog FBD = new FolderBrowserDialog();
-            FBD.ShowNewFolderButton = false;
-            FBD.Description = "Укажите путь к новой папке для копирования структуры папок";
-            if (textBox4.Text.Length == 0)
-            {
-                if (FBD.ShowDialog() == DialogResult.OK)
+                if (listView2.SelectedItems.Count == 1)
                 {
-                    textBox4.Text = FBD.SelectedPath;
-                }
-            }
-            if (textBox4.Text.Length != 0 && Directory.Exists(textBox4.Text))
-            {
-                foreach (string dirPath in Directory.GetDirectories(textBox1.Text, "*", SearchOption.AllDirectories))
-                {
-                    try
+                    button1.Enabled = false;
+                    if (textBox4.Text.Length == 0)
                     {
-                        Directory.CreateDirectory(dirPath.Replace(textBox1.Text, textBox4.Text));//дублируем структуру папок                 
-                    }
-                    catch { }
-                }
-
-                int counter = 0;
-                for (int i = 0; i < listBox1.SelectedItems.Count; i++)//Выполняем замену в каждом выделенном файле
-                {
-                    label6.Text = (i + 1) + " / " + listBox1.SelectedItems.Count + " Working";
-                    /* if (FileIsOpen(listBox1.SelectedItems[i].ToString()) == true)// открыт ли уже файл
-                     { MessageBox.Show("Необходимо закрыть все процессы Word.exe и повторить задачу");break; }
-                     else
-                     {*/
-                    try
-                    {
-                        OpenFile(i);//открываем в word документ
-                        for (int L = 0; L < listView1.Items.Count; L++)
+                        FolderBrowserDialog FBD = new FolderBrowserDialog();
+                        FBD.ShowNewFolderButton = false;
+                        FBD.Description = "Укажите путь к новой папке для копирования структуры папок и генерации файлов";
+                        FBD.SelectedPath = Environment.CurrentDirectory;
+                        if (FBD.ShowDialog() == DialogResult.OK)
                         {
-                            FindReplace(listView1.Items[L].SubItems[0].Text, listView1.Items[L].SubItems[1].Text);//выполняем в тексте документа замену текста
+                            textBox4.Text = FBD.SelectedPath;
                         }
-                        SaveCloseFile(i);//акрываем открытый в word документ
                     }
-                    catch { }
-                    //}
-                    counter++;
+                    MessageBox.Show("!После закрытия окна, все процессы winword.exe будут убиты без сохранения!");
+                    Stopwatch st = new Stopwatch();
+                    st.Start();
+                    foreach (var proc in Process.GetProcessesByName("winWord"))
+                    {
+                        proc.Kill();
+                    }
 
-                    label6.Text = counter + " / " + listBox1.SelectedItems.Count + " Done!";
+                    if (!String.IsNullOrEmpty(textBox4.Text))
+                    {
+                        if (Directory.Exists(textBox4.Text))
+                        {
+                            foreach (string dirPath in Directory.GetDirectories(textBox1.Text, "*", SearchOption.AllDirectories))
+                            {
+                                try
+                                {
+                                    Directory.CreateDirectory(dirPath.Replace(textBox1.Text, textBox4.Text));//дублируем структуру папок                 
+                                }
+                                catch (Exception ee) { MessageBox.Show(ee.Message.ToString()); }
+                            }
+
+                            int counter = 0;
+                            for (int i = 0; i < listView3.SelectedItems.Count; i++)//Выполняем замену в каждом выделенном файле
+                            {
+                                label6.Text = (i + 1) + " / " + listView3.SelectedItems.Count + " Working";
+                                /* if (FileIsOpen(listBox1.SelectedItems[i].ToString()) == true)// открыт ли уже файл
+                                 { MessageBox.Show("Необходимо закрыть все процессы Word.exe и повторить задачу");break; }
+                                 else
+                                 {*/
+                                try
+                                {
+                                    OpenFile(i);//открываем в word документ
+                                    for (int L = 0; L < listView1.Items.Count; L++)
+                                    {
+                                        FindReplace(listView1.Items[L].SubItems[0].Text, listView1.Items[L].SubItems[1].Text);//выполняем в тексте документа замену текста
+                                    }
+                                    SaveCloseFile(i);//закрываем открытый в word документ
+                                }
+                                catch (Exception ee) { MessageBox.Show(ee.Message.ToString() + "\nВозможно MS Office не установлен"); }
+                                //}
+                                counter++;
+
+                                label6.Text = counter + " / " + listView3.SelectedItems.Count + " Done!";
+                            }
+                        }
+                        else MessageBox.Show("Папка с результатами не существует");
+                    }
+                    else MessageBox.Show("Поле 'Папка с результатами' не заполнено");
+                    button1.Enabled = true;
+                    st.Stop(); label8.Text = st.Elapsed.ToString();
                 }
+                else MessageBox.Show("В поле 'Шаблоны замены' не выбран ни один файл");
             }
-            button1.Enabled = true;
-            st.Stop(); label8.Text = st.Elapsed.ToString();
+            else MessageBox.Show("В поле 'Шаблоны в папке' не выбран ни один файл");
         }
+
         // глобальные переменные
         public  Microsoft.Office.Interop.Word.Application app;
         Document doc;
-
-        public static Object missing = Type.Missing;
-
+        public static Object missing = Type.Missing;   
         
         public void OpenFile(int listbox1_id)// Открываем файл .doc 
         {
             app = new Microsoft.Office.Interop.Word.Application();
-            string doc_file = listBox1.SelectedItems[listbox1_id].ToString();
+            string doc_file = listView3.SelectedItems[listbox1_id].SubItems[1].Text.ToString();
             doc = app.Documents.Open(doc_file);          //  app.Documents.Open(textBox1.Text + "\\" + listBox1.SelectedItems[listbox1_id]);
         }
 
-        // Закрытие general и сохранение файла нового файла
+        // Закрытие general и сохранение нового файла
         public void SaveCloseFile(int listbox1_id)
         {
-            string newfile = listBox1.SelectedItems[listbox1_id] + " "+ DateTime.Now.Year.ToString() + "." + DateTime.Now.Month.ToString() + "." + DateTime.Now.Day.ToString() + " " + DateTime.Now.Hour.ToString() + "-" + DateTime.Now.Minute.ToString() + ".doc"; // новый файл на основе файла-шаблона
+            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
+            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
+            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
+            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
+            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
+            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
+            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
+            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
+            string[] patches = listView3.SelectedItems[listbox1_id].SubItems[1].Text.Split('\\');
+            string PatchName = "";
+            for (int i = 0; i < patches.Length - 1; i++)
+            {
+                PatchName += patches[i] + "\\";
+            }
+            string[] fileTypes = listView3.SelectedItems[listbox1_id].SubItems[0].Text.Split('.');
+            string FileName = "";
+            for (int i = 0; i < fileTypes.Length - 1; i++)
+            {
+                if (i != fileTypes.Length - 1)
+                    FileName += fileTypes[i] + ".";
+                else FileName += fileTypes[i];
+            }
+            string FileType = fileTypes[fileTypes.Length - 1];
+            string newfile = PatchName + FileName + " " + DateTime.Now.Year.ToString() + "." + DateTime.Now.Month.ToString() + "." + DateTime.Now.Day.ToString() + " " + DateTime.Now.Hour.ToString() + "-" + DateTime.Now.Minute.ToString() + "." + FileType; // новый файл на основе файла-шаблона
             //string[] newfileA = listBox1.SelectedItems[listbox1_id].ToString().Split('.');
             //newfile = textBox4.Text + "\\"+newfileA[newfileA.Length - 1];
             newfile = newfile.Replace(textBox1.Text, textBox4.Text);
@@ -223,18 +247,23 @@ namespace word_generator
             }*/
         }
 
-
+        /// <summary>
+        /// Подгрузить замены в правое окно
+        /// </summary>
         private void FilReps()
         {
             try
             {
                 listView1.Items.Clear();
-                string tt = textBox3.Text;
-                string[] reps = File.ReadAllLines(tt, Encoding.Default);
-                for (int L = 1; L < reps.Length; L++)
+                string tt = listView2.Items[listView2.SelectedIndices[0]].SubItems[1].Text;
+                if (File.Exists(tt))
                 {
-                    string[] rep = reps[L].Split('\t');
-                    listView1.Items.Add(new ListViewItem(new string[] { rep[0], rep[1] }));
+                    string[] reps = File.ReadAllLines(tt, Encoding.Default);
+                    for (int L = 1; L < reps.Length; L++)
+                    {
+                        string[] rep = reps[L].Split('\t');
+                        listView1.Items.Add(new ListViewItem(new string[] { rep[0], rep[1] }));
+                    }
                 }
             }
             catch { }
@@ -265,11 +294,6 @@ namespace word_generator
             }
         }
 
-        private void TextBox3_TextChanged(object sender, EventArgs e)
-        {
-            FilReps();
-        }
-
         private void Button2_Click(object sender, EventArgs e)
         {
             Save_Parameters();
@@ -285,41 +309,61 @@ namespace word_generator
             if (result == DialogResult.OK)
             {
                 textBox1.Text = folderDlg.SelectedPath;
-                Environment.SpecialFolder root = folderDlg.RootFolder;
             }
-            Save_Parameters();
-            Start();
-          
         }
+        /// <summary>
+        /// Сохранить параметры программы в файл Parameters.txt
+        /// </summary>
         private void Save_Parameters()
         {
             try
             {
-                string[] content = new string[parameters_count];
-                content[0] = "Template_patch\t" + textBox1.Text;
-                content[1] = "Template_selected\t" + textBox2.Text;
-                content[2] = "Replacement_selected\t" + textBox3.Text;
-                content[3] = "Output_folder\t" + textBox4.Text; //папка куда выгружать результаты
-                File.WriteAllLines(Environment.CurrentDirectory + "\\Parameters.txt", content);
+                if (File.Exists("Parameters.txt"))
+                {
+                    string[] content = new string[2];
+                    content[0] = "Template_patch\t" + textBox1.Text;
+                    content[1] = "Output_folder\t" + textBox4.Text; //папка куда выгружать результаты
+
+                    File.WriteAllLines("Parameters.txt", content);
+                }
             }
-            catch { }
-        }
-        private void TextBox2_TextChanged(object sender, EventArgs e)
-        {
-
+            catch (Exception ee) {
+                string ee3 = ee.ToString();
+                MessageBox.Show(ee.InnerException.Message.ToString()); }
         }
 
-        private void Button4_Click(object sender, EventArgs e)
-        {
-            Start();
-        }
+
 
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("https://github.com/sergiomarotco/");
         }
 
-        private void listBox2_SelectedIndexChanged_1(object sender, EventArgs e)
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderDlg = new FolderBrowserDialog();
+            folderDlg.ShowNewFolderButton = true;
+            folderDlg.SelectedPath = Environment.CurrentDirectory;
+
+            DialogResult result = folderDlg.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                textBox4.Text = folderDlg.SelectedPath;
+            }
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            Save_Parameters();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            Save_Parameters();
+        }
+
+        private void listView2_SelectedIndexChanged(object sender, EventArgs e)
         {
             FilReps();
         }

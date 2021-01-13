@@ -114,6 +114,7 @@
     <Content Include="Replacement_Акт.txt" />
     <Content Include="Replacement_Протокол.txt" />
     <None Include="Resources\ico.ico" />
+    <None Include="Resources\select folder.png" />
     <Content Include="word-generator.exe" />
   </ItemGroup>
   <ItemGroup>
