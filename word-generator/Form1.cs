@@ -15,7 +15,7 @@ namespace word_generator
         {
             InitializeComponent();
         }
-        int parameters_count = 0;
+
         /// <summary>
         /// Заполнить параметры в левой части программы из файла Parameters.txt
         /// </summary>
@@ -24,24 +24,22 @@ namespace word_generator
             if (File.Exists("Parameters.txt"))
             {
                 listView3.Items.Clear(); listView2.Items.Clear();
-                string[] parameters = File.ReadAllLines("Parameters.txt");
-                parameters_count = parameters.Length;
-                for (int i = 0; i < parameters.Length; i++)
+                string[] Parameters = File.ReadAllLines("Parameters.txt");//загружаем файл в память
+
+                for (int i = 0; i < Parameters.Length; i++)
                 {
-                    string[] parameter = parameters[i].Split('\t');
-                    switch (parameter[0])
+                    string[] Parameter = Parameters[i].Split('\t');
+                    switch (Parameter[0])
                     {
                         case "Template_patch":
-                            if (Directory.Exists(parameter[1]))
-                                textBox1.Text = parameter[1]; //    Заполняем поле "Папка с шаблонами"
+                            if (Directory.Exists(Parameter[1]))
+                                textBox1.Text = Parameter[1]; //    Заполняем поле "Папка с шаблонами"
                             else textBox1.Text = Environment.CurrentDirectory;
                             try
                             {
                                 string[] Templates = new DirectoryInfo(textBox1.Text).GetFiles("*.doc*", SearchOption.AllDirectories).Select(f => f.FullName).ToArray();
                                 for (int r = 0; r < Templates.Length; r++)
                                 {
-                                    string[] lll = File.ReadAllLines(Templates[r]);
-
                                     string[] patches = Templates[r].Split('\\');
                                     listView3.Items.Add(new ListViewItem(new string[] { patches[patches.Length - 1], Templates[r] }));
 
@@ -61,7 +59,8 @@ namespace word_generator
                             catch(Exception ee) { MessageBox.Show(ee.Message);}
                             break;
                         case "Output_folder":
-                            if (Directory.Exists(parameter[1])) textBox4.Text = parameter[1];
+                            if (Directory.Exists(Parameter[1])) textBox4.Text = Parameter[1];
+                            else textBox4.Text = Environment.CurrentDirectory;
                             break;
                         default: break;
                     }
@@ -71,7 +70,7 @@ namespace word_generator
         private void Form1_Load(object sender, EventArgs e)
         {
             Icon = Properties.Resources.ico;
-            splitContainer1.SplitterDistance = 670;
+            splitContainer1.SplitterDistance = 571;
             LoadParameters();
         }
 
@@ -81,6 +80,7 @@ namespace word_generator
             {
                 if (listView2.SelectedItems.Count == 1)
                 {
+                    label6.Text = ""; label8.Text = "";
                     button1.Enabled = false;
                     if (textBox4.Text.Length == 0)
                     {
@@ -89,9 +89,7 @@ namespace word_generator
                         FBD.Description = "Укажите путь к новой папке для копирования структуры папок и генерации файлов";
                         FBD.SelectedPath = Environment.CurrentDirectory;
                         if (FBD.ShowDialog() == DialogResult.OK)
-                        {
                             textBox4.Text = FBD.SelectedPath;
-                        }
                     }
                     MessageBox.Show("!После закрытия окна, все процессы winword.exe будут убиты без сохранения!");
                     Stopwatch st = new Stopwatch();
@@ -101,9 +99,9 @@ namespace word_generator
                         proc.Kill();
                     }
 
-                    if (!String.IsNullOrEmpty(textBox4.Text))
+                    if (!String.IsNullOrEmpty(textBox4.Text))//проверка заполнен ли путь с папкой
                     {
-                        if (Directory.Exists(textBox4.Text))
+                        if (Directory.Exists(textBox4.Text))//проверка создана ли папка куда сохранять
                         {
                             foreach (string dirPath in Directory.GetDirectories(textBox1.Text, "*", SearchOption.AllDirectories))
                             {
@@ -113,28 +111,19 @@ namespace word_generator
                                 }
                                 catch (Exception ee) { MessageBox.Show(ee.Message.ToString()); }
                             }
-
                             int counter = 0;
                             for (int i = 0; i < listView3.SelectedItems.Count; i++)//Выполняем замену в каждом выделенном файле
                             {
                                 label6.Text = (i + 1) + " / " + listView3.SelectedItems.Count + " Working";
-                                /* if (FileIsOpen(listBox1.SelectedItems[i].ToString()) == true)// открыт ли уже файл
-                                 { MessageBox.Show("Необходимо закрыть все процессы Word.exe и повторить задачу");break; }
-                                 else
-                                 {*/
                                 try
                                 {
                                     OpenFile(i);//открываем в word документ
-                                    for (int L = 0; L < listView1.Items.Count; L++)
-                                    {
-                                        FindReplace(listView1.Items[L].SubItems[0].Text, listView1.Items[L].SubItems[1].Text);//выполняем в тексте документа замену текста
-                                    }
+                                    for (int L = 0; L < listView1.Items.Count; L++)                                    
+                                        FindReplace(listView1.Items[L].SubItems[0].Text, listView1.Items[L].SubItems[1].Text);//выполняем в тексте документа замену текста                                    
                                     SaveCloseFile(i);//закрываем открытый в word документ
                                 }
                                 catch (Exception ee) { MessageBox.Show(ee.Message.ToString() + "\nВозможно MS Office не установлен"); }
-                                //}
                                 counter++;
-
                                 label6.Text = counter + " / " + listView3.SelectedItems.Count + " Done!";
                             }
                         }
@@ -161,23 +150,17 @@ namespace word_generator
             doc = app.Documents.Open(doc_file);          //  app.Documents.Open(textBox1.Text + "\\" + listBox1.SelectedItems[listbox1_id]);
         }
 
-        // Закрытие general и сохранение нового файла
+        /// <summary>
+        /// Закрытие general и сохранение нового файла
+        /// </summary>
+        /// <param name="listbox1_id"></param>
         public void SaveCloseFile(int listbox1_id)
         {
-            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
-            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
-            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
-            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
-            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
-            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
-            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
-            // ОШИБКА В НАЧАЛЕ ФОРМИРУЕМОГО ФАЙЛА НЕТ УЧЕТА В КАКУЮ ПАПКУ ЕГО ПЕМЕСТИТЬ!!!
             string[] patches = listView3.SelectedItems[listbox1_id].SubItems[1].Text.Split('\\');
             string PatchName = "";
             for (int i = 0; i < patches.Length - 1; i++)
-            {
                 PatchName += patches[i] + "\\";
-            }
+
             string[] fileTypes = listView3.SelectedItems[listbox1_id].SubItems[0].Text.Split('.');
             string FileName = "";
             for (int i = 0; i < fileTypes.Length - 1; i++)
@@ -188,18 +171,18 @@ namespace word_generator
             }
             string FileType = fileTypes[fileTypes.Length - 1];
             string newfile = PatchName + FileName + " " + DateTime.Now.Year.ToString() + "." + DateTime.Now.Month.ToString() + "." + DateTime.Now.Day.ToString() + " " + DateTime.Now.Hour.ToString() + "-" + DateTime.Now.Minute.ToString() + "." + FileType; // новый файл на основе файла-шаблона
-            //string[] newfileA = listBox1.SelectedItems[listbox1_id].ToString().Split('.');
-            //newfile = textBox4.Text + "\\"+newfileA[newfileA.Length - 1];
             newfile = newfile.Replace(textBox1.Text, textBox4.Text);
             newfile = newfile.Replace("Template_", "");
             app.ActiveDocument.SaveAs(newfile);
-            app.ActiveDocument.Close();
-            //app.Documents.Close();
+            app.ActiveDocument.Close();            
             app.Quit();
             app = null;
         }
-
-        // поиск и замена
+   /// <summary>
+   /// Функция замены строк в word файле 
+   /// </summary>
+   /// <param name="str_old">Заменяемая страка</param>
+   /// <param name="str_new">Строка которой заменяют</param>
         public void FindReplace(string str_old, string str_new)
         {   
             object missingObject = null;
@@ -250,7 +233,7 @@ namespace word_generator
         /// <summary>
         /// Подгрузить замены в правое окно
         /// </summary>
-        private void FilReps()
+        private void Fill_Replacements()
         {
             try
             {
@@ -299,6 +282,11 @@ namespace word_generator
             Save_Parameters();
         }
 
+        /// <summary>
+        /// Выбрать папку с шаблонами
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button3_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog folderDlg = new FolderBrowserDialog();
@@ -321,17 +309,14 @@ namespace word_generator
                 if (File.Exists("Parameters.txt"))
                 {
                     string[] content = new string[2];
-                    content[0] = "Template_patch\t" + textBox1.Text;
+                    content[0] = "Template_patch\t" + textBox1.Text; //папка с шаблонами файлов из которых делаются гтовые
                     content[1] = "Output_folder\t" + textBox4.Text; //папка куда выгружать результаты
-
                     File.WriteAllLines("Parameters.txt", content);
                 }
             }
             catch (Exception ee) {
-                string ee3 = ee.ToString();
                 MessageBox.Show(ee.InnerException.Message.ToString()); }
         }
-
 
 
         private void LinkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -339,7 +324,11 @@ namespace word_generator
             Process.Start("https://github.com/sergiomarotco/");
         }
 
-
+        /// <summary>
+        /// Выбрать папку с результатами
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button5_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog folderDlg = new FolderBrowserDialog();
@@ -365,7 +354,27 @@ namespace word_generator
 
         private void listView2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            FilReps();
+            Fill_Replacements();
+        }
+
+  
+        /// <summary>
+        /// Действие нажатия на кнопку открытия папки с результатами
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button6_Click(object sender, EventArgs e)
+        {
+            try { Process.Start("explorer", textBox4.Text); } catch { }
+        }
+        /// <summary>
+        /// Действие нажатия на кнопку открытия папки с шаблонами
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button4_Click(object sender, EventArgs e)
+        {
+            try { Process.Start("explorer", textBox1.Text); } catch { }
         }
     }
 }
