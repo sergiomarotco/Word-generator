@@ -1,4 +1,4 @@
-﻿namespace word_generator
+﻿namespace Word_generator
 {
     partial class Form1
     {
@@ -68,7 +68,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(489, 22);
             this.textBox1.TabIndex = 1;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.TextChanged += new System.EventHandler(this.TextBox1_TextChanged);
             // 
             // label1
             // 
@@ -127,7 +127,7 @@
             // button6
             // 
             this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button6.BackgroundImage = global::word_generator.Properties.Resources.open;
+            this.button6.BackgroundImage = global::Word_generator.Properties.Resources.open;
             this.button6.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.button6.Location = new System.Drawing.Point(536, 80);
             this.button6.Name = "button6";
@@ -135,12 +135,12 @@
             this.button6.TabIndex = 20;
             this.toolTip1.SetToolTip(this.button6, "Открыть папку куда сохранить готовые файлы");
             this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.button6.Click += new System.EventHandler(this.Button6_Click);
             // 
             // button4
             // 
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button4.BackgroundImage = global::word_generator.Properties.Resources.open;
+            this.button4.BackgroundImage = global::Word_generator.Properties.Resources.open;
             this.button4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.button4.Location = new System.Drawing.Point(536, 35);
             this.button4.Name = "button4";
@@ -148,7 +148,7 @@
             this.button4.TabIndex = 19;
             this.toolTip1.SetToolTip(this.button4, "Открыть папку с шаблонами для замены");
             this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.button4.Click += new System.EventHandler(this.Button4_Click);
             // 
             // listView3
             // 
@@ -190,7 +190,7 @@
             this.listView2.TabIndex = 17;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
-            this.listView2.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
+            this.listView2.SelectedIndexChanged += new System.EventHandler(this.ListView2_SelectedIndexChanged);
             // 
             // columnHeader3
             // 
@@ -205,7 +205,7 @@
             // button5
             // 
             this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button5.BackgroundImage = global::word_generator.Properties.Resources.select_folder;
+            this.button5.BackgroundImage = global::Word_generator.Properties.Resources.select_folder;
             this.button5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.button5.Location = new System.Drawing.Point(498, 80);
             this.button5.Name = "button5";
@@ -213,7 +213,7 @@
             this.button5.TabIndex = 16;
             this.toolTip1.SetToolTip(this.button5, "Выбрать папку куда сохранить готовые файлы");
             this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.button5.Click += new System.EventHandler(this.Button5_Click);
             // 
             // label8
             // 
@@ -239,7 +239,7 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(489, 22);
             this.textBox4.TabIndex = 13;
-            this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
+            this.textBox4.TextChanged += new System.EventHandler(this.TextBox4_TextChanged);
             // 
             // label6
             // 
@@ -264,7 +264,7 @@
             // button3
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.BackgroundImage = global::word_generator.Properties.Resources.select_folder;
+            this.button3.BackgroundImage = global::Word_generator.Properties.Resources.select_folder;
             this.button3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.button3.Location = new System.Drawing.Point(498, 35);
             this.button3.Name = "button3";
