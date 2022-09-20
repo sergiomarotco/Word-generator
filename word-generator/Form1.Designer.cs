@@ -1,6 +1,5 @@
 ﻿namespace Word_generator
-{
-    partial class Form1
+{    partial class Form1
     {
         /// <summary>
         /// Обязательная переменная конструктора.

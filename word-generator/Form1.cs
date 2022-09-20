@@ -122,10 +122,22 @@ namespace Word_generator
             doc.GoTo(ref item, ref whichItem, ref missingObject, ref missingObject);
             foreach (Range rng in doc.StoryRanges)
             {
-                rng.Find.Execute(ref originalText, ref matchCase,
-                ref matchAllWord, ref missingObject, ref missingObject, ref missingObject, ref forward,
-                ref missingObject, ref missingObject, ref replaceText, ref replaceAll, ref missingObject,
-                ref missingObject, ref missingObject, ref missingObject);
+                rng.Find.Execute(
+                    ref originalText,
+                    ref matchCase,
+                    ref matchAllWord,
+                    ref missingObject,
+                    ref missingObject,
+                    ref missingObject,
+                    ref forward,
+                    ref missingObject,
+                    ref missingObject,
+                    ref replaceText,
+                    ref replaceAll,
+                    ref missingObject,
+                    ref missingObject,
+                    ref missingObject,
+                    ref missingObject);
             }
 
             /* Код работающий быстрее но не работающий с колонтитулами:
@@ -222,6 +234,16 @@ namespace Word_generator
                     }
                 }
             }
+
+            if (listView2.Items.Count == 1)
+            {
+                listView2.Items[0].Selected = true; // автоматически выделяем единственный элемент в списке для упрощения
+            }
+
+            if (listView3.Items.Count == 1)
+            {
+                listView3.Items[0].Selected = true; // автоматически выделяем единственный элемент в списке для упрощения
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -294,7 +316,7 @@ namespace Word_generator
                                 }
                                 catch (Exception ee)
                                 {
-                                    MessageBox.Show(ee.Message.ToString() + "\nВозможно MS Office не установлен");
+                                    MessageBox.Show(ee.Message.ToString() + Environment.NewLine + Environment.NewLine + "Закройте все процессы Word и повторите попытку.", "Возможно MS Office не установлен или не отвечает");
                                 }
 
                                 counter++;
@@ -372,6 +394,7 @@ namespace Word_generator
             if (result == DialogResult.OK)
             {
                 textBox1.Text = folderDlg.SelectedPath;
+                LoadParameters();
             }
         }
 
@@ -418,6 +441,7 @@ namespace Word_generator
             if (result == DialogResult.OK)
             {
                 textBox4.Text = folderDlg.SelectedPath;
+                LoadParameters();
             }
         }
 
